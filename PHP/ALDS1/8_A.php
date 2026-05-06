@@ -40,18 +40,18 @@ class BST {
         }
     }
 
-    public function inorder($node) {
+    public function inorder($node, &$res) {
         if ($node === null) return;
-        $this->inorder($node->left);
-        echo " " . $node->key;
-        $this->inorder($node->right);
+        $this->inorder($node->left, $res);
+        $res[] = $node->key;
+        $this->inorder($node->right, $res);
     }
 
-    public function preorder($node) {
+    public function preorder($node, &$res) {
         if ($node === null) return;
-        echo " " . $node->key;
-        $this->preorder($node->left);
-        $this->preorder($node->right);
+        $res[] = $node->key;
+        $this->preorder($node->left, $res);
+        $this->preorder($node->right, $res);
     }
 }
 
@@ -64,9 +64,11 @@ for ($i = 0; $i < $n; $i++) {
     if ($input[0] === "insert") {
         $bst->insert(intval($input[1]));
     } else if ($input[0] === "print") {
-        $bst->inorder($bst->root);
-        echo "\n";
-        $bst->preorder($bst->root);
-        echo "\n";
+        $in = [];
+        $pre = [];
+        $bst->inorder($bst->root, $in);
+        $bst->preorder($bst->root, $pre);
+        echo " " . implode(" ", $in) . "\n";
+        echo " " . implode(" ", $pre) . "\n";
     }
 }
