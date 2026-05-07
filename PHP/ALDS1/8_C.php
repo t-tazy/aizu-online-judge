@@ -52,6 +52,62 @@ class BST {
         }
     }
 
+    public function delete($key) {
+        $node = $this->find($this->root, $key);
+        if ($node === null) return;
+
+        if ($node->left === null || $node->right === null) {
+            $target = $node;
+        } else {
+            $target = $this->treeSuccessor($node);
+        }
+
+        // 削除対象（ポインタ付け替え対象）の子を求める
+        $child = $target->left !== null ? $target->left : $target->right;
+
+        // 新しい親を設定
+        if ($child !== null) $child->parent = $target->parent;
+
+        if ($target->parent === null) {
+            $this->root = $child;
+        } else {
+            if ($target === $target->parent->left) {
+                $target->parent->left = $child;
+            } else {
+                $target->parent->right = $child;
+            }
+        }
+
+        if ($target !== $node) {
+            $node->key = $target->key;
+        }
+
+        unset($target);
+    }
+
+    public function treeMinimun(Node $node): Node {
+        while ($node->left !== null) {
+            $node = $node->left;
+        }
+
+        return $node;
+    }
+
+    /**
+     * 中間順巡回での次節点を返す
+     */
+    public function treeSuccessor(Node $node): ?Node {
+        if ($node->right !== null) return $this->treeMinimun($node->right);
+
+        $parent = $node->parent;
+        while ($parent !== null && $node === $parent->right) {
+            $node = $parent;
+            $parent = $parent->parent;
+        }
+
+        return $parent;
+    }
+
     public function inorder($node, &$res) {
         if ($node === null) return;
         $this->inorder($node->left, $res);
@@ -79,6 +135,8 @@ for ($i = 0; $i < $n; $i++) {
         $node = $bst->find($bst->root, intval($input[1]));
         $result = $node !== null ? "yes" : "no";
         echo $result . "\n";
+    } else if ($input[0] === "delete") {
+        $bst->delete(intval($input[1]));
     } else if ($input[0] === "print") {
         $in = [];
         $pre = [];
